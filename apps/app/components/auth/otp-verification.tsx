@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { Button, Input } from "@repo/ui";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -29,6 +30,7 @@ export function OtpVerification({
   onCancel,
   isDisabled,
 }: OtpVerificationProps) {
+  const { format, t } = useI18n();
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -68,18 +70,18 @@ export function OtpVerification({
       } else if (result.error) {
         const code = "code" in result.error ? result.error.code : undefined;
         if (code === OTP_ERROR_CODES.TOO_MANY_ATTEMPTS) {
-          onError("Too many failed attempts. Please request a new code.");
+          onError(t("auth", "tooManyAttempts"));
           onCancel();
         } else if (code === OTP_ERROR_CODES.OTP_EXPIRED) {
-          onError("Code has expired. Please request a new one.");
+          onError(t("auth", "codeExpired"));
           onCancel();
         } else {
-          onError(result.error.message || "Invalid verification code");
+          onError(result.error.message || t("auth", "invalidCode"));
         }
       }
     } catch (err) {
       console.error("OTP verification error:", err);
-      onError("Failed to verify code");
+      onError(t("auth", "verifyFailed"));
     } finally {
       setLoading(false);
     }
@@ -101,13 +103,13 @@ export function OtpVerification({
       });
 
       if (result.error) {
-        onError(result.error.message || "Failed to send OTP");
+        onError(result.error.message || t("auth", "sendOtpFailed"));
       } else {
         setResendCooldown(RESEND_COOLDOWN_SECONDS);
       }
     } catch (err) {
       console.error("Email OTP error:", err);
-      onError("Failed to send verification code");
+      onError(t("auth", "sendCodeFailed"));
     } finally {
       setLoading(false);
     }
@@ -119,7 +121,7 @@ export function OtpVerification({
     <form onSubmit={handleOtpVerification} className="flex flex-col gap-3">
       <Input
         type="text"
-        placeholder="Enter 6-digit code"
+        placeholder={t("auth", "codePlaceholder")}
         value={otp}
         onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
         disabled={disabled}
@@ -137,7 +139,7 @@ export function OtpVerification({
         className="w-full"
         disabled={disabled || otp.length !== 6}
       >
-        Verify code
+        {t("auth", "verifyCode")}
       </Button>
       <Button
         type="button"
@@ -147,8 +149,8 @@ export function OtpVerification({
         disabled={disabled || resendCooldown > 0}
       >
         {resendCooldown > 0
-          ? `Resend code in ${resendCooldown}s`
-          : "Resend code"}
+          ? format("auth", "resendCodeIn", { seconds: resendCooldown })
+          : t("auth", "resendCode")}
       </Button>
     </form>
   );

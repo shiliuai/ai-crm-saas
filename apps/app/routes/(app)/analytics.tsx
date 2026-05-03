@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import {
   Card,
   CardContent,
@@ -13,32 +14,33 @@ export const Route = createFileRoute("/(app)/analytics")({
 });
 
 function Analytics() {
+  const { t } = useI18n();
   const metrics = [
     {
-      title: "Total Revenue",
+      title: t("analytics", "totalRevenue"),
       value: "$45,231.89",
-      change: "+20.1% from last month",
+      change: t("analytics", "revenueChange"),
       icon: DollarSign,
       color: "text-green-600",
     },
     {
-      title: "Active Users",
+      title: t("analytics", "activeUsers"),
       value: "2,350",
-      change: "+180 from last month",
+      change: t("analytics", "activeUsersChange"),
       icon: Users,
       color: "text-blue-600",
     },
     {
-      title: "Conversion Rate",
+      title: t("analytics", "conversionRate"),
       value: "3.2%",
-      change: "+0.5% from last month",
+      change: t("analytics", "conversionChange"),
       icon: TrendingUp,
       color: "text-purple-600",
     },
     {
-      title: "Avg. Session Duration",
+      title: t("analytics", "avgSessionDuration"),
       value: "4m 32s",
-      change: "+12s from last month",
+      change: t("analytics", "sessionChange"),
       icon: Activity,
       color: "text-orange-600",
     },
@@ -47,9 +49,9 @@ function Analytics() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Analytics</h2>
+        <h2 className="text-2xl font-bold">{t("analytics", "title")}</h2>
         <p className="text-muted-foreground">
-          Track your application's performance and user engagement metrics.
+          {t("analytics", "description")}
         </p>
       </div>
 
@@ -75,9 +77,9 @@ function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Overview</CardTitle>
+            <CardTitle>{t("analytics", "revenueOverview")}</CardTitle>
             <CardDescription>
-              Monthly revenue for the past 6 months
+              {t("analytics", "revenueDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -85,7 +87,7 @@ function Analytics() {
               {/* Placeholder for chart */}
               <div className="text-center">
                 <TrendingUp className="h-12 w-12 mx-auto mb-2" />
-                <p>Chart visualization would go here</p>
+                <p>{t("analytics", "chartPlaceholder")}</p>
               </div>
             </div>
           </CardContent>
@@ -93,15 +95,17 @@ function Analytics() {
 
         <Card>
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
-            <CardDescription>New vs returning users over time</CardDescription>
+            <CardTitle>{t("analytics", "userGrowth")}</CardTitle>
+            <CardDescription>
+              {t("analytics", "userGrowthDescription")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-center justify-center text-muted-foreground">
               {/* Placeholder for chart */}
               <div className="text-center">
                 <Users className="h-12 w-12 mx-auto mb-2" />
-                <p>Chart visualization would go here</p>
+                <p>{t("analytics", "chartPlaceholder")}</p>
               </div>
             </div>
           </CardContent>
@@ -111,9 +115,9 @@ function Analytics() {
       {/* Top Pages */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Pages</CardTitle>
+          <CardTitle>{t("analytics", "topPages")}</CardTitle>
           <CardDescription>
-            Most visited pages in your application
+            {t("analytics", "topPagesDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -130,7 +134,7 @@ function Analytics() {
                   <div className="flex justify-between mb-1">
                     <span className="text-sm font-medium">{item.page}</span>
                     <span className="text-sm text-muted-foreground">
-                      {item.views.toLocaleString()} views
+                      {item.views.toLocaleString()} {t("common", "views")}
                     </span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">

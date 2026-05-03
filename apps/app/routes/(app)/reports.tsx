@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import {
   Button,
   Card,
@@ -19,52 +20,53 @@ export const Route = createFileRoute("/(app)/reports")({
 });
 
 function Reports() {
+  const { t } = useI18n();
   const reports = [
     {
       id: 1,
-      name: "Monthly Sales Report",
-      type: "Sales",
+      name: t("reports", "monthlySales"),
+      type: t("reports", "sales"),
       date: "2024-01-01",
-      status: "Ready",
+      status: "ready",
     },
     {
       id: 2,
-      name: "User Activity Report",
-      type: "Analytics",
+      name: t("reports", "userActivity"),
+      type: t("reports", "analytics"),
       date: "2024-01-15",
-      status: "Ready",
+      status: "ready",
     },
     {
       id: 3,
-      name: "Financial Summary",
-      type: "Finance",
+      name: t("reports", "financialSummary"),
+      type: t("reports", "finance"),
       date: "2024-01-20",
-      status: "Processing",
+      status: "processing",
     },
     {
       id: 4,
-      name: "Performance Metrics",
-      type: "Performance",
+      name: t("reports", "performanceMetrics"),
+      type: t("reports", "performance"),
       date: "2024-01-25",
-      status: "Ready",
+      status: "ready",
     },
   ];
 
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Reports</h2>
+        <h2 className="text-2xl font-bold">{t("reports", "title")}</h2>
         <p className="text-muted-foreground">
-          Generate and download various reports for your data.
+          {t("reports", "description")}
         </p>
       </div>
 
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
+          <CardTitle>{t("reports", "filters")}</CardTitle>
           <CardDescription>
-            Filter reports by type and date range
+            {t("reports", "filtersDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,33 +74,45 @@ function Reports() {
             <div className="flex-1">
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select report type" />
+                  <SelectValue placeholder={t("reports", "selectReportType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="analytics">Analytics</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="performance">Performance</SelectItem>
+                  <SelectItem value="all">{t("reports", "allTypes")}</SelectItem>
+                  <SelectItem value="sales">{t("reports", "sales")}</SelectItem>
+                  <SelectItem value="analytics">
+                    {t("reports", "analytics")}
+                  </SelectItem>
+                  <SelectItem value="finance">
+                    {t("reports", "finance")}
+                  </SelectItem>
+                  <SelectItem value="performance">
+                    {t("reports", "performance")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex-1">
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select date range" />
+                  <SelectValue placeholder={t("reports", "selectDateRange")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7days">Last 7 days</SelectItem>
-                  <SelectItem value="30days">Last 30 days</SelectItem>
-                  <SelectItem value="90days">Last 90 days</SelectItem>
-                  <SelectItem value="year">This year</SelectItem>
+                  <SelectItem value="7days">
+                    {t("reports", "last7Days")}
+                  </SelectItem>
+                  <SelectItem value="30days">
+                    {t("reports", "last30Days")}
+                  </SelectItem>
+                  <SelectItem value="90days">
+                    {t("reports", "last90Days")}
+                  </SelectItem>
+                  <SelectItem value="year">{t("reports", "thisYear")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button className="gap-2">
               <Filter className="h-4 w-4" />
-              Apply Filters
+              {t("reports", "applyFilters")}
             </Button>
           </div>
         </CardContent>
@@ -107,28 +121,28 @@ function Reports() {
       {/* Report Generation */}
       <Card>
         <CardHeader>
-          <CardTitle>Generate New Report</CardTitle>
+          <CardTitle>{t("reports", "generateNew")}</CardTitle>
           <CardDescription>
-            Create a custom report based on your needs
+            {t("reports", "generateDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button variant="outline" className="h-24 flex-col gap-2">
               <FileText className="h-6 w-6" />
-              <span>Sales Report</span>
+              <span>{t("reports", "salesReport")}</span>
             </Button>
             <Button variant="outline" className="h-24 flex-col gap-2">
               <FileText className="h-6 w-6" />
-              <span>User Report</span>
+              <span>{t("reports", "userReport")}</span>
             </Button>
             <Button variant="outline" className="h-24 flex-col gap-2">
               <FileText className="h-6 w-6" />
-              <span>Financial Report</span>
+              <span>{t("reports", "financialReport")}</span>
             </Button>
             <Button variant="outline" className="h-24 flex-col gap-2">
               <FileText className="h-6 w-6" />
-              <span>Custom Report</span>
+              <span>{t("reports", "customReport")}</span>
             </Button>
           </div>
         </CardContent>
@@ -137,8 +151,8 @@ function Reports() {
       {/* Recent Reports */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Reports</CardTitle>
-          <CardDescription>Your recently generated reports</CardDescription>
+          <CardTitle>{t("reports", "recentReports")}</CardTitle>
+          <CardDescription>{t("reports", "recentDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -163,17 +177,21 @@ function Reports() {
                 <div className="flex items-center gap-2">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
-                      report.status === "Ready"
+                      report.status === "ready"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {report.status}
+                    {t(
+                      "reports",
+                      report.status === "ready" ? "ready" : "processing",
+                    )}
                   </span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    disabled={report.status !== "Ready"}
+                    disabled={report.status !== "ready"}
+                    aria-label={t("reports", "download")}
                   >
                     <Download className="h-4 w-4" />
                   </Button>

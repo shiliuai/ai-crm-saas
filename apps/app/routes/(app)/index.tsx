@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import {
   Card,
   CardContent,
@@ -13,27 +14,28 @@ export const Route = createFileRoute("/(app)/")({
 });
 
 function Dashboard() {
+  const { format, t } = useI18n();
   const stats = [
     {
-      title: "Total Users",
+      title: t("dashboard", "totalUsers"),
       value: "1,234",
       change: "+12%",
       icon: Users,
     },
     {
-      title: "Active Sessions",
+      title: t("dashboard", "activeSessions"),
       value: "89",
       change: "+5%",
       icon: Activity,
     },
     {
-      title: "Reports Generated",
+      title: t("dashboard", "reportsGenerated"),
       value: "456",
       change: "+23%",
       icon: FileText,
     },
     {
-      title: "Growth Rate",
+      title: t("dashboard", "growthRate"),
       value: "18.2%",
       change: "+2.1%",
       icon: TrendingUp,
@@ -43,9 +45,9 @@ function Dashboard() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Dashboard</h2>
+        <h2 className="text-2xl font-bold">{t("dashboard", "title")}</h2>
         <p className="text-muted-foreground">
-          Welcome back! Here's an overview of your application.
+          {t("dashboard", "description")}
         </p>
       </div>
 
@@ -62,8 +64,8 @@ function Dashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{stat.change}</span> from last
-                month
+                <span className="text-green-600">{stat.change}</span>{" "}
+                {t("common", "fromLastMonth")}
               </p>
             </CardContent>
           </Card>
@@ -74,8 +76,10 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest events in your application</CardDescription>
+            <CardTitle>{t("dashboard", "recentActivity")}</CardTitle>
+            <CardDescription>
+              {t("dashboard", "recentActivityDescription")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -83,9 +87,15 @@ function Dashboard() {
                 <div key={i} className="flex items-center gap-4">
                   <div className="h-2 w-2 rounded-full bg-primary" />
                   <div className="flex-1">
-                    <p className="text-sm">User action performed</p>
+                    <p className="text-sm">{t("dashboard", "userAction")}</p>
                     <p className="text-xs text-muted-foreground">
-                      {i} hour{i > 1 ? "s" : ""} ago
+                      {format("dashboard", "hoursAgo", {
+                        count: i,
+                        unit:
+                          i > 1
+                            ? t("dashboard", "hours")
+                            : t("dashboard", "hour"),
+                      })}
                     </p>
                   </div>
                 </div>
@@ -96,8 +106,10 @@ function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks and operations</CardDescription>
+            <CardTitle>{t("dashboard", "quickActions")}</CardTitle>
+            <CardDescription>
+              {t("dashboard", "quickActionsDescription")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
@@ -106,28 +118,36 @@ function Dashboard() {
                 className="p-4 text-left border rounded-lg hover:bg-accent transition-colors"
               >
                 <FileText className="h-5 w-5 mb-2" />
-                <p className="text-sm font-medium">Generate Report</p>
+                <p className="text-sm font-medium">
+                  {t("dashboard", "generateReport")}
+                </p>
               </button>
               <button
                 type="button"
                 className="p-4 text-left border rounded-lg hover:bg-accent transition-colors"
               >
                 <Users className="h-5 w-5 mb-2" />
-                <p className="text-sm font-medium">Manage Users</p>
+                <p className="text-sm font-medium">
+                  {t("dashboard", "manageUsers")}
+                </p>
               </button>
               <button
                 type="button"
                 className="p-4 text-left border rounded-lg hover:bg-accent transition-colors"
               >
                 <Activity className="h-5 w-5 mb-2" />
-                <p className="text-sm font-medium">View Analytics</p>
+                <p className="text-sm font-medium">
+                  {t("dashboard", "viewAnalytics")}
+                </p>
               </button>
               <button
                 type="button"
                 className="p-4 text-left border rounded-lg hover:bg-accent transition-colors"
               >
                 <TrendingUp className="h-5 w-5 mb-2" />
-                <p className="text-sm font-medium">Export Data</p>
+                <p className="text-sm font-medium">
+                  {t("dashboard", "exportData")}
+                </p>
               </button>
             </div>
           </CardContent>

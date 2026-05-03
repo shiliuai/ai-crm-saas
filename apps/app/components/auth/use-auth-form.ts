@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { auth } from "@/lib/auth";
 import type { FormEvent } from "react";
 import { useCallback, useRef, useState } from "react";
@@ -33,6 +34,7 @@ export function useAuthForm({
   isExternallyLoading,
   mode = "login",
 }: UseAuthFormOptions) {
+  const { t } = useI18n();
   const [step, setStep] = useState<AuthStep>("method");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +67,7 @@ export function useAuthForm({
       await onSuccess();
     } catch (err) {
       console.error("Post-auth error:", err);
-      setError("Something went wrong. Please try again.");
+      setError(t("auth", "genericError"));
       hasSucceededRef.current = false; // Allow retry on error
     } finally {
       setIsLoading(false);
@@ -112,11 +114,11 @@ export function useAuthForm({
       if (result.data) {
         transitionTo("otp");
       } else if (result.error) {
-        setError(result.error.message || "Failed to send OTP");
+        setError(result.error.message || t("auth", "sendOtpFailed"));
       }
     } catch (err) {
       console.error("Email OTP error:", err);
-      setError("Failed to send verification code");
+      setError(t("auth", "sendCodeFailed"));
     } finally {
       setIsLoading(false);
     }

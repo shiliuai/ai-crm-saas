@@ -4,6 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { NotFound } from "./components/not-found";
+import { I18nProvider } from "./lib/i18n";
 import { queryClient } from "./lib/query";
 import { routeTree } from "./lib/routeTree.gen";
 import "./styles/globals.css";
@@ -20,15 +21,17 @@ const root = createRoot(container!);
 
 root.render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      {import.meta.env.DEV && (
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-right"
-        />
-      )}
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        {import.meta.env.DEV && (
+          <ReactQueryDevtools
+            initialIsOpen={false}
+            buttonPosition="bottom-right"
+          />
+        )}
+      </QueryClientProvider>
+    </I18nProvider>
   </StrictMode>,
 );
 

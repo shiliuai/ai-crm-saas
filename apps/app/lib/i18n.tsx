@@ -1,0 +1,505 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+
+export const languages = {
+  en: "English",
+  zh: "中文",
+} as const;
+
+export type Language = keyof typeof languages;
+
+const STORAGE_KEY = "app-language";
+
+const en = {
+  app: {
+    name: "Application",
+    console: "Console",
+    menu: "Toggle menu",
+    settings: "Settings",
+  },
+  language: {
+    toggleLabel: "Switch language",
+    current: "EN",
+  },
+  nav: {
+    dashboard: "Dashboard",
+    analytics: "Analytics",
+    users: "Users",
+    reports: "Reports",
+    settings: "Settings",
+  },
+  common: {
+    loading: "Loading...",
+    retry: "Retry",
+    user: "User",
+    views: "views",
+    fromLastMonth: "from last month",
+  },
+  auth: {
+    goHome: "Go to homepage",
+    createAccount: "Create your account",
+    loginTo: "Log in to {appName}",
+    continueWithEmail: "Continue with email",
+    continueWithGoogle: "Continue with Google",
+    loginWithPasskey: "Log in with passkey",
+    alreadyHaveAccount: "Already have an account?",
+    dontHaveAccount: "Don't have an account?",
+    logIn: "Log in",
+    signUp: "Sign up",
+    emailQuestion: "What's your email address?",
+    emailPlaceholder: "Enter your email address...",
+    backTo: "Back to {target}",
+    checkEmail: "Check your email",
+    sentCodeTo: "We sent a code to {email}",
+    backToEmail: "Back to email",
+    codePlaceholder: "Enter 6-digit code",
+    verifyCode: "Verify code",
+    resendCode: "Resend code",
+    resendCodeIn: "Resend code in {seconds}s",
+    termsIntro: "By signing up, you agree to our",
+    terms: "Terms of Service",
+    and: "and",
+    privacy: "Privacy Policy",
+    signOut: "Sign out",
+    sessionLoadFailed: "Failed to load session",
+    genericError: "Something went wrong. Please try again.",
+    sendOtpFailed: "Failed to send OTP",
+    sendCodeFailed: "Failed to send verification code",
+    tooManyAttempts: "Too many failed attempts. Please request a new code.",
+    codeExpired: "Code has expired. Please request a new one.",
+    invalidCode: "Invalid verification code",
+    verifyFailed: "Failed to verify code",
+    googleFailed: "Failed to sign in with Google",
+    passkeyCancelled: "Passkey authentication was cancelled.",
+  },
+  notFound: {
+    message: "The page you're looking for doesn't exist.",
+    action: "Go Home",
+  },
+  dashboard: {
+    title: "Dashboard",
+    description: "Welcome back! Here's an overview of your application.",
+    totalUsers: "Total Users",
+    activeSessions: "Active Sessions",
+    reportsGenerated: "Reports Generated",
+    growthRate: "Growth Rate",
+    recentActivity: "Recent Activity",
+    recentActivityDescription: "Latest events in your application",
+    userAction: "User action performed",
+    quickActions: "Quick Actions",
+    quickActionsDescription: "Common tasks and operations",
+    generateReport: "Generate Report",
+    manageUsers: "Manage Users",
+    viewAnalytics: "View Analytics",
+    exportData: "Export Data",
+    hoursAgo: "{count} {unit} ago",
+    hour: "hour",
+    hours: "hours",
+  },
+  analytics: {
+    title: "Analytics",
+    description:
+      "Track your application's performance and user engagement metrics.",
+    totalRevenue: "Total Revenue",
+    activeUsers: "Active Users",
+    conversionRate: "Conversion Rate",
+    avgSessionDuration: "Avg. Session Duration",
+    revenueChange: "+20.1% from last month",
+    activeUsersChange: "+180 from last month",
+    conversionChange: "+0.5% from last month",
+    sessionChange: "+12s from last month",
+    revenueOverview: "Revenue Overview",
+    revenueDescription: "Monthly revenue for the past 6 months",
+    userGrowth: "User Growth",
+    userGrowthDescription: "New vs returning users over time",
+    chartPlaceholder: "Chart visualization would go here",
+    topPages: "Top Pages",
+    topPagesDescription: "Most visited pages in your application",
+  },
+  users: {
+    title: "Users",
+    description: "Manage user accounts and permissions.",
+    addUser: "Add User",
+    totalUsers: "Total Users",
+    activeUsers: "Active Users",
+    newThisMonth: "New This Month",
+    activeUsersRatio: "72% of total users",
+    userManagement: "User Management",
+    userManagementDescription: "View and manage all user accounts",
+    searchPlaceholder: "Search users...",
+    filter: "Filter",
+    user: "User",
+    role: "Role",
+    status: "Status",
+    lastActive: "Last Active",
+    actions: "Actions",
+    admin: "Admin",
+    editor: "Editor",
+    viewer: "Viewer",
+    active: "Active",
+    inactive: "Inactive",
+    twoHoursAgo: "2 hours ago",
+    fiveMinutesAgo: "5 minutes ago",
+    twoDaysAgo: "2 days ago",
+    oneHourAgo: "1 hour ago",
+    thirtyMinutesAgo: "30 minutes ago",
+  },
+  reports: {
+    title: "Reports",
+    description: "Generate and download various reports for your data.",
+    filters: "Filters",
+    filtersDescription: "Filter reports by type and date range",
+    selectReportType: "Select report type",
+    selectDateRange: "Select date range",
+    allTypes: "All Types",
+    sales: "Sales",
+    analytics: "Analytics",
+    finance: "Finance",
+    performance: "Performance",
+    last7Days: "Last 7 days",
+    last30Days: "Last 30 days",
+    last90Days: "Last 90 days",
+    thisYear: "This year",
+    applyFilters: "Apply Filters",
+    generateNew: "Generate New Report",
+    generateDescription: "Create a custom report based on your needs",
+    salesReport: "Sales Report",
+    userReport: "User Report",
+    financialReport: "Financial Report",
+    customReport: "Custom Report",
+    recentReports: "Recent Reports",
+    recentDescription: "Your recently generated reports",
+    monthlySales: "Monthly Sales Report",
+    userActivity: "User Activity Report",
+    financialSummary: "Financial Summary",
+    performanceMetrics: "Performance Metrics",
+    ready: "Ready",
+    processing: "Processing",
+    download: "Download report",
+  },
+  settings: {
+    title: "Settings",
+    description: "Manage your account settings and preferences.",
+    profile: "Profile",
+    profileDescription:
+      "Update your personal information and profile settings.",
+    name: "Name",
+    namePlaceholder: "Enter your name",
+    email: "Email",
+    emailPlaceholder: "Enter your email",
+    saveChanges: "Save Changes",
+    notifications: "Notifications",
+    notificationsDescription: "Configure how you receive notifications.",
+    emailNotifications: "Email Notifications",
+    emailNotificationsDescription: "Receive notifications via email",
+    pushNotifications: "Push Notifications",
+    pushNotificationsDescription: "Receive push notifications in your browser",
+    security: "Security",
+    securityDescription:
+      "Manage your security preferences and authentication.",
+    changePassword: "Change Password",
+    enable2fa: "Enable Two-Factor Authentication",
+    appearance: "Appearance",
+    appearanceDescription: "Customize the look and feel of the application.",
+    darkMode: "Dark Mode",
+    darkModeDescription: "Toggle dark mode theme",
+    billing: "Billing",
+    billingDescription: "Manage your subscription and billing details.",
+    plan: "{plan} plan",
+    accessUntil: "Access until",
+    renewsOn: "Renews on",
+    canceling:
+      "Your subscription will not renew. You can restore it from the billing portal.",
+    manageBilling: "Manage Billing",
+    freePlan: "You are on the Free plan.",
+    upgradeStarter: "Upgrade to Starter",
+    upgradePro: "Upgrade to Pro",
+  },
+} as const;
+
+const zh: typeof en = {
+  app: {
+    name: "应用",
+    console: "控制台",
+    menu: "切换菜单",
+    settings: "设置",
+  },
+  language: {
+    toggleLabel: "切换语言",
+    current: "中",
+  },
+  nav: {
+    dashboard: "仪表盘",
+    analytics: "分析",
+    users: "用户",
+    reports: "报表",
+    settings: "设置",
+  },
+  common: {
+    loading: "加载中...",
+    retry: "重试",
+    user: "用户",
+    views: "次浏览",
+    fromLastMonth: "较上月",
+  },
+  auth: {
+    goHome: "返回首页",
+    createAccount: "创建你的账号",
+    loginTo: "登录到 {appName}",
+    continueWithEmail: "使用邮箱继续",
+    continueWithGoogle: "使用 Google 继续",
+    loginWithPasskey: "使用通行密钥登录",
+    alreadyHaveAccount: "已经有账号？",
+    dontHaveAccount: "还没有账号？",
+    logIn: "登录",
+    signUp: "注册",
+    emailQuestion: "你的邮箱地址是什么？",
+    emailPlaceholder: "输入你的邮箱地址...",
+    backTo: "返回{target}",
+    checkEmail: "查看你的邮箱",
+    sentCodeTo: "我们已向 {email} 发送验证码",
+    backToEmail: "返回邮箱输入",
+    codePlaceholder: "输入 6 位验证码",
+    verifyCode: "验证",
+    resendCode: "重新发送验证码",
+    resendCodeIn: "{seconds} 秒后可重新发送",
+    termsIntro: "注册即表示你同意我们的",
+    terms: "服务条款",
+    and: "和",
+    privacy: "隐私政策",
+    signOut: "退出登录",
+    sessionLoadFailed: "加载会话失败",
+    genericError: "出错了，请重试。",
+    sendOtpFailed: "发送验证码失败",
+    sendCodeFailed: "发送验证码失败",
+    tooManyAttempts: "失败次数过多，请重新获取验证码。",
+    codeExpired: "验证码已过期，请重新获取。",
+    invalidCode: "验证码无效",
+    verifyFailed: "验证码验证失败",
+    googleFailed: "Google 登录失败",
+    passkeyCancelled: "通行密钥认证已取消。",
+  },
+  notFound: {
+    message: "你要找的页面不存在。",
+    action: "返回首页",
+  },
+  dashboard: {
+    title: "仪表盘",
+    description: "欢迎回来！这里是你的应用概览。",
+    totalUsers: "用户总数",
+    activeSessions: "活跃会话",
+    reportsGenerated: "已生成报表",
+    growthRate: "增长率",
+    recentActivity: "近期动态",
+    recentActivityDescription: "应用中的最新事件",
+    userAction: "用户执行了一项操作",
+    quickActions: "快捷操作",
+    quickActionsDescription: "常用任务和操作",
+    generateReport: "生成报表",
+    manageUsers: "管理用户",
+    viewAnalytics: "查看分析",
+    exportData: "导出数据",
+    hoursAgo: "{count} 小时前",
+    hour: "小时",
+    hours: "小时",
+  },
+  analytics: {
+    title: "分析",
+    description: "跟踪应用性能和用户参与指标。",
+    totalRevenue: "总收入",
+    activeUsers: "活跃用户",
+    conversionRate: "转化率",
+    avgSessionDuration: "平均会话时长",
+    revenueChange: "较上月 +20.1%",
+    activeUsersChange: "较上月 +180",
+    conversionChange: "较上月 +0.5%",
+    sessionChange: "较上月 +12 秒",
+    revenueOverview: "收入概览",
+    revenueDescription: "过去 6 个月的月度收入",
+    userGrowth: "用户增长",
+    userGrowthDescription: "新用户与回访用户趋势",
+    chartPlaceholder: "图表可视化将在这里显示",
+    topPages: "热门页面",
+    topPagesDescription: "应用中访问量最高的页面",
+  },
+  users: {
+    title: "用户",
+    description: "管理用户账号和权限。",
+    addUser: "添加用户",
+    totalUsers: "用户总数",
+    activeUsers: "活跃用户",
+    newThisMonth: "本月新增",
+    activeUsersRatio: "占全部用户 72%",
+    userManagement: "用户管理",
+    userManagementDescription: "查看并管理所有用户账号",
+    searchPlaceholder: "搜索用户...",
+    filter: "筛选",
+    user: "用户",
+    role: "角色",
+    status: "状态",
+    lastActive: "最近活跃",
+    actions: "操作",
+    admin: "管理员",
+    editor: "编辑者",
+    viewer: "查看者",
+    active: "活跃",
+    inactive: "未活跃",
+    twoHoursAgo: "2 小时前",
+    fiveMinutesAgo: "5 分钟前",
+    twoDaysAgo: "2 天前",
+    oneHourAgo: "1 小时前",
+    thirtyMinutesAgo: "30 分钟前",
+  },
+  reports: {
+    title: "报表",
+    description: "生成并下载各类数据报表。",
+    filters: "筛选",
+    filtersDescription: "按类型和日期范围筛选报表",
+    selectReportType: "选择报表类型",
+    selectDateRange: "选择日期范围",
+    allTypes: "全部类型",
+    sales: "销售",
+    analytics: "分析",
+    finance: "财务",
+    performance: "性能",
+    last7Days: "最近 7 天",
+    last30Days: "最近 30 天",
+    last90Days: "最近 90 天",
+    thisYear: "今年",
+    applyFilters: "应用筛选",
+    generateNew: "生成新报表",
+    generateDescription: "按需创建自定义报表",
+    salesReport: "销售报表",
+    userReport: "用户报表",
+    financialReport: "财务报表",
+    customReport: "自定义报表",
+    recentReports: "最近报表",
+    recentDescription: "你最近生成的报表",
+    monthlySales: "月度销售报表",
+    userActivity: "用户活动报表",
+    financialSummary: "财务摘要",
+    performanceMetrics: "性能指标",
+    ready: "已就绪",
+    processing: "处理中",
+    download: "下载报表",
+  },
+  settings: {
+    title: "设置",
+    description: "管理你的账号设置和偏好。",
+    profile: "个人资料",
+    profileDescription: "更新你的个人信息和资料设置。",
+    name: "姓名",
+    namePlaceholder: "输入你的姓名",
+    email: "邮箱",
+    emailPlaceholder: "输入你的邮箱",
+    saveChanges: "保存更改",
+    notifications: "通知",
+    notificationsDescription: "配置你接收通知的方式。",
+    emailNotifications: "邮件通知",
+    emailNotificationsDescription: "通过邮件接收通知",
+    pushNotifications: "推送通知",
+    pushNotificationsDescription: "在浏览器中接收推送通知",
+    security: "安全",
+    securityDescription: "管理你的安全偏好和身份验证。",
+    changePassword: "修改密码",
+    enable2fa: "启用双重验证",
+    appearance: "外观",
+    appearanceDescription: "自定义应用的外观和体验。",
+    darkMode: "深色模式",
+    darkModeDescription: "切换深色主题",
+    billing: "账单",
+    billingDescription: "管理订阅和账单详情。",
+    plan: "{plan} 套餐",
+    accessUntil: "可使用至",
+    renewsOn: "续费日期",
+    canceling: "你的订阅不会续费。你可以在账单门户中恢复订阅。",
+    manageBilling: "管理账单",
+    freePlan: "你当前使用免费套餐。",
+    upgradeStarter: "升级到 Starter",
+    upgradePro: "升级到 Pro",
+  },
+};
+
+const dictionaries = { en, zh } as const;
+
+type Dictionary = typeof en;
+type Namespace = keyof Dictionary;
+type MessageKey<N extends Namespace> = keyof Dictionary[N] & string;
+
+interface I18nContextValue {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  toggleLanguage: () => void;
+  t: <N extends Namespace>(namespace: N, key: MessageKey<N>) => string;
+  format: <N extends Namespace>(
+    namespace: N,
+    key: MessageKey<N>,
+    values: Record<string, string | number>,
+  ) => string;
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+function getInitialLanguage(): Language {
+  if (typeof window === "undefined") return "en";
+
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  if (stored === "en" || stored === "zh") return stored;
+
+  return window.navigator.language.toLowerCase().startsWith("zh")
+    ? "zh"
+    : "en";
+}
+
+function interpolate(
+  message: string,
+  values: Record<string, string | number>,
+) {
+  return message.replace(/\{(\w+)\}/g, (_, key: string) =>
+    String(values[key] ?? `{${key}}`),
+  );
+}
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+
+  const setLanguage = useCallback((nextLanguage: Language) => {
+    setLanguageState(nextLanguage);
+    window.localStorage.setItem(STORAGE_KEY, nextLanguage);
+  }, []);
+
+  const value = useMemo<I18nContextValue>(() => {
+    const dictionary = dictionaries[language];
+
+    return {
+      language,
+      setLanguage,
+      toggleLanguage: () => setLanguage(language === "en" ? "zh" : "en"),
+      t: (namespace, key) => dictionary[namespace][key],
+      format: (namespace, key, values) =>
+        interpolate(dictionary[namespace][key], values),
+    };
+  }, [language, setLanguage]);
+
+  useEffect(() => {
+    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+  }, [language]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (!context) {
+    throw new Error("useI18n must be used within I18nProvider");
+  }
+
+  return context;
+}

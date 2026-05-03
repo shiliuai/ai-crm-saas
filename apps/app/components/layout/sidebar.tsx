@@ -1,4 +1,5 @@
 import { UserMenu } from "@/components/user-menu";
+import { useI18n } from "@/lib/i18n";
 import { sidebarItems } from "./constants";
 import { SidebarNav } from "./sidebar-nav";
 
@@ -7,6 +8,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen }: SidebarProps) {
+  const { t } = useI18n();
+
   return (
     <aside
       className={`${
@@ -15,7 +18,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
     >
       <div className="h-full flex flex-col">
         <div className="h-14 flex items-center px-4 border-b">
-          <h2 className="font-semibold text-lg">Console</h2>
+          <h2 className="font-semibold text-lg">{t("app", "console")}</h2>
         </div>
         <SidebarNav items={sidebarItems} />
         <UserMenu />

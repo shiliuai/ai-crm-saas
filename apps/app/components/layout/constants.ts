@@ -1,9 +1,9 @@
 import { Activity, FileText, Home, Settings, Users } from "lucide-react";
 
 export const sidebarItems = [
-  { icon: Home, label: "Dashboard", to: "/" },
-  { icon: Activity, label: "Analytics", to: "/analytics" },
-  { icon: Users, label: "Users", to: "/users" },
-  { icon: FileText, label: "Reports", to: "/reports" },
-  { icon: Settings, label: "Settings", to: "/settings" },
+  { icon: Home, labelKey: "dashboard", to: "/" },
+  { icon: Activity, labelKey: "analytics", to: "/analytics" },
+  { icon: Users, labelKey: "users", to: "/users" },
+  { icon: FileText, labelKey: "reports", to: "/reports" },
+  { icon: Settings, labelKey: "settings", to: "/settings" },
 ] as const;

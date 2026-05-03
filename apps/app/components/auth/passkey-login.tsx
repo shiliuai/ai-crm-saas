@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { authConfig } from "@/lib/auth-config";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@repo/ui";
 import { KeyRound } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -23,6 +24,7 @@ export function PasskeyLogin({
   onLoadingChange,
   isDisabled,
 }: PasskeyLoginProps) {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
 
   const setLoading = useCallback(
@@ -91,7 +93,7 @@ export function PasskeyLogin({
         const errorCode =
           "code" in result.error ? result.error.code : undefined;
         if (errorCode === "AUTH_CANCELLED") {
-          onError("Passkey authentication was cancelled.");
+          onError(t("auth", "passkeyCancelled"));
         } else {
           onError(result.error.message || authConfig.errors.genericError);
         }
@@ -113,7 +115,7 @@ export function PasskeyLogin({
       disabled={isDisabled || isLoading}
     >
       <KeyRound className="mr-2 h-4 w-4" />
-      Log in with passkey
+      {t("auth", "loginWithPasskey")}
     </Button>
   );
 }

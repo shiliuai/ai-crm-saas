@@ -1,3 +1,5 @@
+import { LanguageToggle } from "@/components/language-toggle";
+import { useI18n } from "@/lib/i18n";
 import { Button, Input, cn } from "@repo/ui";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Mail } from "lucide-react";
@@ -10,21 +12,23 @@ import { useAuthForm } from "./use-auth-form";
 const APP_NAME = import.meta.env.VITE_APP_NAME || "your account";
 
 function SignupTerms() {
+  const { t } = useI18n();
+
   return (
     <p className="text-xs text-muted-foreground text-center text-balance">
-      By signing up, you agree to our{" "}
+      {t("auth", "termsIntro")}{" "}
       <a
         href="/terms"
         className="underline underline-offset-4 hover:text-primary"
       >
-        Terms of Service
+        {t("auth", "terms")}
       </a>{" "}
-      and{" "}
+      {t("auth", "and")}{" "}
       <a
         href="/privacy"
         className="underline underline-offset-4 hover:text-primary"
       >
-        Privacy Policy
+        {t("auth", "privacy")}
       </a>
       .
     </p>
@@ -52,6 +56,7 @@ export function AuthForm({
   returnTo,
   ...props
 }: AuthFormProps) {
+  const { t } = useI18n();
   const {
     step,
     email,
@@ -89,10 +94,14 @@ export function AuthForm({
   return (
     <div className={cn("flex flex-col gap-6 w-full", className)} {...props}>
       {/* Logo */}
-      <div className="flex justify-center">
-        <Link to="/" aria-label="Go to homepage">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+        <span />
+        <Link to="/" aria-label={t("auth", "goHome")}>
           <img src="/logo512.png" alt="" className="h-10 w-10" />
         </Link>
+        <div className="justify-self-end">
+          <LanguageToggle />
+        </div>
       </div>
 
       {/* Error message - role="alert" ensures screen readers announce it */}
@@ -166,7 +175,10 @@ function MethodSelection({
   onLoadingChange,
   returnTo,
 }: MethodSelectionProps) {
-  const heading = isSignup ? "Create your account" : `Log in to ${APP_NAME}`;
+  const { format, t } = useI18n();
+  const heading = isSignup
+    ? t("auth", "createAccount")
+    : format("auth", "loginTo", { appName: APP_NAME });
 
   return (
     <div className="flex flex-col gap-6">
@@ -188,7 +200,7 @@ function MethodSelection({
           disabled={isDisabled}
         >
           <Mail className="mr-2 h-4 w-4" />
-          Continue with email
+          {t("auth", "continueWithEmail")}
         </Button>
 
         {/* Passkey only available for login (requires existing account) */}
@@ -208,22 +220,22 @@ function MethodSelection({
       <p className="text-sm text-muted-foreground text-center">
         {isSignup ? (
           <>
-            Already have an account?{" "}
+            {t("auth", "alreadyHaveAccount")}{" "}
             <Link
               to="/login"
               className="font-medium text-primary underline-offset-4 hover:underline"
             >
-              Log in
+              {t("auth", "logIn")}
             </Link>
           </>
         ) : (
           <>
-            Don't have an account?{" "}
+            {t("auth", "dontHaveAccount")}{" "}
             <Link
               to="/signup"
               className="font-medium text-primary underline-offset-4 hover:underline"
             >
-              Sign up
+              {t("auth", "signUp")}
             </Link>
           </>
         )}
@@ -250,16 +262,19 @@ function EmailInput({
   onSubmit,
   onBack,
 }: EmailInputProps) {
+  const { format, t } = useI18n();
+  const target = isSignup ? t("auth", "signUp") : t("auth", "logIn");
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-center">
-        What's your email address?
+        {t("auth", "emailQuestion")}
       </h1>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <Input
           type="email"
-          placeholder="Enter your email address..."
+          placeholder={t("auth", "emailPlaceholder")}
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
           disabled={isDisabled}
@@ -273,7 +288,7 @@ function EmailInput({
           className="w-full"
           disabled={isDisabled || !email.trim()}
         >
-          Continue with email
+          {t("auth", "continueWithEmail")}
         </Button>
       </form>
 
@@ -287,7 +302,7 @@ function EmailInput({
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to {isSignup ? "sign up" : "login"}
+        {format("auth", "backTo", { target })}
       </button>
     </div>
   );
@@ -313,12 +328,14 @@ function OtpStep({
   onBack,
   onCancel,
 }: OtpStepProps) {
+  const { format, t } = useI18n();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Check your email</h1>
+        <h1 className="text-2xl font-bold">{t("auth", "checkEmail")}</h1>
         <p className="text-muted-foreground mt-1">
-          We sent a code to <strong>{email}</strong>
+          {format("auth", "sentCodeTo", { email })}
         </p>
       </div>
 
@@ -339,7 +356,7 @@ function OtpStep({
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to email
+        {t("auth", "backToEmail")}
       </button>
     </div>
   );

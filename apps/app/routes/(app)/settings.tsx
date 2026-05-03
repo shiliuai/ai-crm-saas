@@ -13,6 +13,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { Bell, CreditCard, Palette, Shield, User } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { useBillingQuery } from "@/lib/queries/billing";
 import { useSessionQuery } from "@/lib/queries/session";
 
@@ -21,12 +22,14 @@ export const Route = createFileRoute("/(app)/settings")({
 });
 
 function Settings() {
+  const { t } = useI18n();
+
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Settings</h2>
+        <h2 className="text-2xl font-bold">{t("settings", "title")}</h2>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences.
+          {t("settings", "description")}
         </p>
       </div>
 
@@ -36,22 +39,26 @@ function Settings() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              <CardTitle>Profile</CardTitle>
+              <CardTitle>{t("settings", "profile")}</CardTitle>
             </div>
             <CardDescription>
-              Update your personal information and profile settings.
+              {t("settings", "profileDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="Enter your name" />
+              <Label htmlFor="name">{t("settings", "name")}</Label>
+              <Input id="name" placeholder={t("settings", "namePlaceholder")} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="Enter your email" />
+              <Label htmlFor="email">{t("settings", "email")}</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder={t("settings", "emailPlaceholder")}
+              />
             </div>
-            <Button>Save Changes</Button>
+            <Button>{t("settings", "saveChanges")}</Button>
           </CardContent>
         </Card>
 
@@ -63,18 +70,20 @@ function Settings() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle>{t("settings", "notifications")}</CardTitle>
             </div>
             <CardDescription>
-              Configure how you receive notifications.
+              {t("settings", "notificationsDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">Email Notifications</Label>
+                <Label htmlFor="email-notifications">
+                  {t("settings", "emailNotifications")}
+                </Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive notifications via email
+                  {t("settings", "emailNotificationsDescription")}
                 </p>
               </div>
               <Switch id="email-notifications" />
@@ -82,9 +91,11 @@ function Settings() {
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="push-notifications">Push Notifications</Label>
+                <Label htmlFor="push-notifications">
+                  {t("settings", "pushNotifications")}
+                </Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive push notifications in your browser
+                  {t("settings", "pushNotificationsDescription")}
                 </p>
               </div>
               <Switch id="push-notifications" />
@@ -97,19 +108,19 @@ function Settings() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              <CardTitle>Security</CardTitle>
+              <CardTitle>{t("settings", "security")}</CardTitle>
             </div>
             <CardDescription>
-              Manage your security preferences and authentication.
+              {t("settings", "securityDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Button variant="outline">Change Password</Button>
+              <Button variant="outline">{t("settings", "changePassword")}</Button>
             </div>
             <div className="space-y-2">
               <Button variant="outline">
-                Enable Two-Factor Authentication
+                {t("settings", "enable2fa")}
               </Button>
             </div>
           </CardContent>
@@ -120,18 +131,18 @@ function Settings() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Palette className="h-5 w-5" />
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>{t("settings", "appearance")}</CardTitle>
             </div>
             <CardDescription>
-              Customize the look and feel of the application.
+              {t("settings", "appearanceDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="dark-mode">Dark Mode</Label>
+                <Label htmlFor="dark-mode">{t("settings", "darkMode")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Toggle dark mode theme
+                  {t("settings", "darkModeDescription")}
                 </p>
               </div>
               <Switch id="dark-mode" />
@@ -144,6 +155,7 @@ function Settings() {
 }
 
 function BillingCard() {
+  const { format, t } = useI18n();
   const { data: session } = useSessionQuery();
   const activeOrgId = session?.session?.activeOrganizationId;
   const { data: billing, isLoading } = useBillingQuery(activeOrgId);
@@ -179,56 +191,62 @@ function BillingCard() {
       <CardHeader>
         <div className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          <CardTitle>Billing</CardTitle>
+          <CardTitle>{t("settings", "billing")}</CardTitle>
         </div>
         <CardDescription>
-          Manage your subscription and billing details.
+          {t("settings", "billingDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">
+            {t("common", "loading")}
+          </p>
         ) : hasSubscription ? (
           <>
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}{" "}
-                plan
+                {format("settings", "plan", {
+                  plan:
+                    billing.plan.charAt(0).toUpperCase() +
+                    billing.plan.slice(1),
+                })}
                 <span className="ml-2 text-xs text-muted-foreground">
                   ({billing.status})
                 </span>
               </p>
               {billing.periodEnd && (
                 <p className="text-sm text-muted-foreground">
-                  {isCanceling ? "Access until" : "Renews on"}{" "}
+                  {isCanceling
+                    ? t("settings", "accessUntil")
+                    : t("settings", "renewsOn")}{" "}
                   {new Date(billing.periodEnd).toLocaleDateString()}
                 </p>
               )}
               {isCanceling && (
                 <p className="text-sm text-amber-600">
-                  Your subscription will not renew. You can restore it from the
-                  billing portal.
+                  {t("settings", "canceling")}
                 </p>
               )}
             </div>
             <Button variant="outline" onClick={handleManageBilling}>
-              Manage Billing
+              {t("settings", "manageBilling")}
             </Button>
           </>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              You are on the Free plan.
+              {t("settings", "freePlan")}
             </p>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() => handleUpgrade("starter")}
               >
-                Upgrade to Starter
+                {t("settings", "upgradeStarter")}
               </Button>
               <Button onClick={() => handleUpgrade("pro")}>
-                Upgrade to Pro
+                {t("settings", "upgradePro")}
               </Button>
             </div>
           </div>

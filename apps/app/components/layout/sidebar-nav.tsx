@@ -1,10 +1,11 @@
+import { useI18n } from "@/lib/i18n";
 import type { FileRoutesByTo } from "@/lib/routeTree.gen";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 
 interface SidebarNavItem {
   icon: LucideIcon;
-  label: string;
+  labelKey: "dashboard" | "analytics" | "users" | "reports" | "settings";
   to: keyof FileRoutesByTo;
 }
 
@@ -13,6 +14,8 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ items }: SidebarNavProps) {
+  const { t } = useI18n();
+
   return (
     <nav className="flex-1 p-4 space-y-1">
       {items.map((item) => (
@@ -25,7 +28,7 @@ export function SidebarNav({ items }: SidebarNavProps) {
           }}
         >
           <item.icon className="h-4 w-4" />
-          <span>{item.label}</span>
+          <span>{t("nav", item.labelKey)}</span>
         </Link>
       ))}
     </nav>

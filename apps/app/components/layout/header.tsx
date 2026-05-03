@@ -1,3 +1,5 @@
+import { LanguageToggle } from "@/components/language-toggle";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@repo/ui";
 import { Menu, Settings, X } from "lucide-react";
 
@@ -7,12 +9,16 @@ interface HeaderProps {
 }
 
 export function Header({ isSidebarOpen, onMenuToggle }: HeaderProps) {
+  const { t } = useI18n();
+
   return (
     <header className="h-14 border-b bg-background flex items-center px-4 gap-4">
       <Button
+        type="button"
         variant="ghost"
         size="icon"
         onClick={onMenuToggle}
+        aria-label={t("app", "menu")}
         className="shrink-0"
       >
         {isSidebarOpen ? (
@@ -23,11 +29,17 @@ export function Header({ isSidebarOpen, onMenuToggle }: HeaderProps) {
       </Button>
 
       <div className="flex-1 flex items-center gap-4">
-        <h1 className="text-lg font-semibold">Application</h1>
+        <h1 className="text-lg font-semibold">{t("app", "name")}</h1>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon">
+        <LanguageToggle />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label={t("app", "settings")}
+        >
           <Settings className="h-5 w-5" />
         </Button>
       </div>

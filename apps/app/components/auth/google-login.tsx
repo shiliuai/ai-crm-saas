@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { sessionQueryKey } from "@/lib/queries/session";
 import { Button } from "@repo/ui";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ export function GoogleLogin({
   onLoadingChange,
   returnTo,
 }: GoogleLoginProps) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,7 +50,7 @@ export function GoogleLogin({
       });
 
       if (result?.error) {
-        onError(result.error.message || "Failed to sign in with Google");
+        onError(result.error.message || t("auth", "googleFailed"));
         setLoading(false);
       } else if (!result?.data?.redirect) {
         // No redirect (popup blocked, misconfigured provider, etc.) - reset loading
@@ -57,7 +59,7 @@ export function GoogleLogin({
       // On redirect, page navigates away - component unmounts, no cleanup needed
     } catch (err) {
       console.error("Google login error:", err);
-      onError("Failed to sign in with Google");
+      onError(t("auth", "googleFailed"));
       setLoading(false);
     }
   };
@@ -80,7 +82,7 @@ export function GoogleLogin({
           fill="currentColor"
         />
       </svg>
-      Continue with Google
+      {t("auth", "continueWithGoogle")}
     </Button>
   );
 }

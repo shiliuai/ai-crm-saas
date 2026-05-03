@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { signOut, useSessionQuery } from "@/lib/queries/session";
 import { Avatar, AvatarFallback, Button } from "@repo/ui";
 import { useQueryClient } from "@tanstack/react-query";
@@ -5,6 +6,7 @@ import { LogOut, RefreshCw, User } from "lucide-react";
 
 /** Displays current authenticated user and sign-out control. */
 export function UserMenu() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const { data: session, isPending, error, refetch } = useSessionQuery();
 
@@ -22,7 +24,7 @@ export function UserMenu() {
   if (error) {
     return (
       <div className="px-3 py-2 text-sm text-destructive">
-        Failed to load session
+        {t("auth", "sessionLoadFailed")}
         <Button
           variant="ghost"
           size="sm"
@@ -30,7 +32,7 @@ export function UserMenu() {
           className="ml-2"
         >
           <RefreshCw className="h-3 w-3" />
-          Retry
+          {t("common", "retry")}
         </Button>
       </div>
     );
@@ -51,14 +53,17 @@ export function UserMenu() {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{user.name || "User"}</p>
+          <p className="text-sm font-medium truncate">
+            {user.name || t("common", "user")}
+          </p>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => signOut(queryClient)}
-          title="Sign out"
+          title={t("auth", "signOut")}
+          aria-label={t("auth", "signOut")}
         >
           <LogOut className="h-4 w-4" />
         </Button>
