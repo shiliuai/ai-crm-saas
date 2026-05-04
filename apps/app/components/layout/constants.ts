@@ -1,8 +1,16 @@
-import { Activity, FileText, Home, Settings, Users } from "lucide-react";
+import {
+  Activity,
+  ContactRound,
+  FileText,
+  Home,
+  Settings,
+  Users,
+} from "lucide-react";
 
 export const sidebarItems = [
   { icon: Home, labelKey: "dashboard", to: "/" },
   { icon: Activity, labelKey: "analytics", to: "/analytics" },
+  { icon: ContactRound, labelKey: "customers", to: "/customers" },
   { icon: Users, labelKey: "users", to: "/users" },
   { icon: FileText, labelKey: "reports", to: "/reports" },
   { icon: Settings, labelKey: "settings", to: "/settings" },

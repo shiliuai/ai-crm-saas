@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import i18next from "i18next";
+import { useEffect, type ReactNode } from "react";
+import { initReactI18next, useTranslation } from "react-i18next";
 
 export const languages = {
   en: "English",
@@ -31,6 +25,7 @@ const en = {
   nav: {
     dashboard: "Dashboard",
     analytics: "Analytics",
+    customers: "Customers",
     users: "Users",
     reports: "Reports",
     settings: "Settings",
@@ -151,6 +146,52 @@ const en = {
     oneHourAgo: "1 hour ago",
     thirtyMinutesAgo: "30 minutes ago",
   },
+  customers: {
+    title: "Customers",
+    description: "Track accounts, contacts, pipeline value, and next steps.",
+    addCustomer: "Add Customer",
+    totalCustomers: "Total Customers",
+    activeDeals: "Active Deals",
+    pipelineValue: "Pipeline Value",
+    dueFollowUps: "Due Follow-ups",
+    customersDescription: "Manage customer relationships across the pipeline",
+    searchPlaceholder: "Search customers...",
+    filter: "Filter",
+    cardView: "Card view",
+    listView: "List view",
+    customer: "Customer",
+    company: "Company",
+    owner: "Owner",
+    stage: "Stage",
+    value: "Value",
+    nextStep: "Next Step",
+    lastContact: "Last Contact",
+    actions: "Actions",
+    email: "Email",
+    phone: "Phone",
+    location: "Location",
+    enterprise: "Enterprise",
+    midMarket: "Mid-market",
+    smallBusiness: "Small business",
+    negotiation: "Negotiation",
+    proposal: "Proposal",
+    qualified: "Qualified",
+    onboarding: "Onboarding",
+    renewal: "Renewal",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    friday: "Friday",
+    nextWeek: "Next week",
+    lastContactTwoHours: "2 hours ago",
+    lastContactYesterday: "Yesterday",
+    lastContactThreeDays: "3 days ago",
+    lastContactOneWeek: "1 week ago",
+    scheduleDemo: "Schedule product demo",
+    sendProposal: "Send revised proposal",
+    confirmBudget: "Confirm budget owner",
+    reviewHealth: "Review onboarding health",
+    prepareRenewal: "Prepare renewal options",
+  },
   reports: {
     title: "Reports",
     description: "Generate and download various reports for your data.",
@@ -238,6 +279,7 @@ const zh: typeof en = {
   nav: {
     dashboard: "仪表盘",
     analytics: "分析",
+    customers: "客户",
     users: "用户",
     reports: "报表",
     settings: "设置",
@@ -357,6 +399,52 @@ const zh: typeof en = {
     oneHourAgo: "1 小时前",
     thirtyMinutesAgo: "30 分钟前",
   },
+  customers: {
+    title: "客户",
+    description: "跟踪客户、联系人、商机金额和下一步动作。",
+    addCustomer: "新增客户",
+    totalCustomers: "客户总数",
+    activeDeals: "活跃商机",
+    pipelineValue: "管道金额",
+    dueFollowUps: "待跟进",
+    customersDescription: "管理销售管道中的客户关系",
+    searchPlaceholder: "搜索客户...",
+    filter: "筛选",
+    cardView: "卡片视图",
+    listView: "列表视图",
+    customer: "客户",
+    company: "公司",
+    owner: "负责人",
+    stage: "阶段",
+    value: "金额",
+    nextStep: "下一步",
+    lastContact: "最近联系",
+    actions: "操作",
+    email: "邮箱",
+    phone: "电话",
+    location: "地区",
+    enterprise: "企业客户",
+    midMarket: "中型客户",
+    smallBusiness: "小型客户",
+    negotiation: "谈判中",
+    proposal: "方案阶段",
+    qualified: "已确认需求",
+    onboarding: "上线中",
+    renewal: "续约",
+    today: "今天",
+    tomorrow: "明天",
+    friday: "周五",
+    nextWeek: "下周",
+    lastContactTwoHours: "2 小时前",
+    lastContactYesterday: "昨天",
+    lastContactThreeDays: "3 天前",
+    lastContactOneWeek: "1 周前",
+    scheduleDemo: "安排产品演示",
+    sendProposal: "发送修订方案",
+    confirmBudget: "确认预算负责人",
+    reviewHealth: "检查上线健康度",
+    prepareRenewal: "准备续约方案",
+  },
   reports: {
     title: "报表",
     description: "生成并下载各类数据报表。",
@@ -427,25 +515,14 @@ const zh: typeof en = {
   },
 };
 
-const dictionaries = { en, zh } as const;
+const resources = {
+  en: { translation: en },
+  zh: { translation: zh },
+} as const;
 
 type Dictionary = typeof en;
 type Namespace = keyof Dictionary;
 type MessageKey<N extends Namespace> = keyof Dictionary[N] & string;
-
-interface I18nContextValue {
-  language: Language;
-  setLanguage: (language: Language) => void;
-  toggleLanguage: () => void;
-  t: <N extends Namespace>(namespace: N, key: MessageKey<N>) => string;
-  format: <N extends Namespace>(
-    namespace: N,
-    key: MessageKey<N>,
-    values: Record<string, string | number>,
-  ) => string;
-}
-
-const I18nContext = createContext<I18nContextValue | null>(null);
 
 function getInitialLanguage(): Language {
   if (typeof window === "undefined") return "en";
@@ -458,48 +535,63 @@ function getInitialLanguage(): Language {
     : "en";
 }
 
-function interpolate(
-  message: string,
-  values: Record<string, string | number>,
-) {
-  return message.replace(/\{(\w+)\}/g, (_, key: string) =>
-    String(values[key] ?? `{${key}}`),
-  );
+function normalizeLanguage(language?: string): Language {
+  return language?.toLowerCase().startsWith("zh") ? "zh" : "en";
+}
+
+if (!i18next.isInitialized) {
+  void i18next.use(initReactI18next).init({
+    resources,
+    lng: getInitialLanguage(),
+    fallbackLng: "en",
+    interpolation: {
+      escapeValue: false,
+      prefix: "{",
+      suffix: "}",
+    },
+    react: {
+      useSuspense: false,
+    },
+  });
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
-
-  const setLanguage = useCallback((nextLanguage: Language) => {
-    setLanguageState(nextLanguage);
-    window.localStorage.setItem(STORAGE_KEY, nextLanguage);
-  }, []);
-
-  const value = useMemo<I18nContextValue>(() => {
-    const dictionary = dictionaries[language];
-
-    return {
-      language,
-      setLanguage,
-      toggleLanguage: () => setLanguage(language === "en" ? "zh" : "en"),
-      t: (namespace, key) => dictionary[namespace][key],
-      format: (namespace, key, values) =>
-        interpolate(dictionary[namespace][key], values),
-    };
-  }, [language, setLanguage]);
+  const { i18n } = useTranslation();
+  const language = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
 
   useEffect(() => {
-    document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
-  }, [language]);
+    const syncLanguage = (nextLanguage: string) => {
+      const normalizedLanguage = normalizeLanguage(nextLanguage);
+      document.documentElement.lang =
+        normalizedLanguage === "zh" ? "zh-CN" : "en";
+      window.localStorage.setItem(STORAGE_KEY, normalizedLanguage);
+    };
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+    syncLanguage(language);
+    i18n.on("languageChanged", syncLanguage);
+    return () => i18n.off("languageChanged", syncLanguage);
+  }, [i18n, language]);
+
+  return <>{children}</>;
 }
 
 export function useI18n() {
-  const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error("useI18n must be used within I18nProvider");
-  }
+  const { i18n, t: translate } = useTranslation();
+  const language = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const setLanguage = (nextLanguage: Language) => {
+    void i18n.changeLanguage(nextLanguage);
+  };
 
-  return context;
+  return {
+    language,
+    setLanguage,
+    toggleLanguage: () => setLanguage(language === "en" ? "zh" : "en"),
+    t: <N extends Namespace>(namespace: N, key: MessageKey<N>) =>
+      translate(`${namespace}.${key}`),
+    format: <N extends Namespace>(
+      namespace: N,
+      key: MessageKey<N>,
+      values: Record<string, string | number>,
+    ) => translate(`${namespace}.${key}`, values),
+  };
 }

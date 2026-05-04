@@ -5,7 +5,13 @@ import type { LucideIcon } from "lucide-react";
 
 interface SidebarNavItem {
   icon: LucideIcon;
-  labelKey: "dashboard" | "analytics" | "users" | "reports" | "settings";
+  labelKey:
+    | "dashboard"
+    | "analytics"
+    | "customers"
+    | "users"
+    | "reports"
+    | "settings";
   to: keyof FileRoutesByTo;
 }
 
